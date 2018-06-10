@@ -1,0 +1,70 @@
+#HTTPS(GSM) commands to establish the internet connection through the SIM
+    CONTYPE = "AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\""
+    APN = "AT+SAPBR=3,1,\"APN\",\"airtelgprs.com\""
+    SAPBR = "AT+SAPBR=1,1"    
+    HTTPINIT = "AT+HTTPINIT"
+    HTTPSTART = "AT+HTTPPARA=\"CID\",1"    
+    HTTPURL = "AT+HTTPPARA=\"URL\",\"http://api.thingspeak.com/update?api_key=O030PXVPCU18Y0HH&field1="
+    HTTPACTION = "AT+HTTPACTION=0"
+    CLSBR = "AT+SAPBR=0,1"
+    
+#use phone.write(message.encode() + b"\r") for all these above commands
+
+def GPS_Send(phone, ATCmd):
+    phone.write(ATCmd.encode() + b"\r")
+    time.sleep(0.05)
+    c = phone.read(200)
+    if ENABLE_DEBUG == 1:
+        if(c != ""):
+            print(c)
+    ret = check(c, ATCmd)
+    return ret
+
+def HTTP_Init(phone):
+    Httpstate = CONTYPE
+    success = 1
+    GPS_Send(phone, "AT+SAPBR=0,1")                  #Terminate any open connection
+    GPS_Send(phone, "AT+HTTPTERM")                   #Terminate any open HTTP requests
+
+    while(success != 0):
+        if(Httpstate == CONTYPE):
+            success = GPS_Send(phone, CONTYPE)
+            if(success):
+                Httpstate = APN
+            else:
+                return success
+            
+        elif(Httpstate == APN):
+            success = GPS_Send(phone, APN)
+            if(success):
+                Httpstate = SAPBR
+            else:
+                return success
+
+        elif(Httpstate == SAPBR):
+            success = GPS_Send(phone, SAPBR)
+            if(success):
+                Httpstate = HTTPINIT
+            else:
+                return success
+
+        elif(Httpstate == HTTPINIT):
+            success = GPS_Send(phone, HTTPINIT)
+            return success    
+
+
+def HTTP_CloseChannel(phone):
+    success = GPS_Send(phone, CLSBR)
+    return success
+
+
+def DataHTTP(phone):
+        ATCOM = HTTPURL + str(float(value)) + "\""
+        ret = GPS_Send(phone, HTTPSTART)
+        if(ret):
+            ret = GPS_Send(phone, ATCOM)
+        	ret = GPS_Send(phone,HTTPACTION=0)i
+
+Shankarnarayan PS
+Founder of Gluevity labs
+Bangalore

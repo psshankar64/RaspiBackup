@@ -1,0 +1,10 @@
+
+
+To update in field 1(SPeed)
+
+https://api.thingspeak.com/update?api_key=Q5IJ589JWO5ZSHTP&field1=0
+
+
+To update in field2(Roll_angle)
+
+https://api.thingspeak.com/update?api_key=Q5IJ589JWO5ZSHTP&field2=0
